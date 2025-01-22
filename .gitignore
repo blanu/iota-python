@@ -1,0 +1,8 @@
+.DS_Store
+.idea
+build
+dist
+iota_python.egg-info
+__pycache__
+iota/__pycache__
+tests/__pycache__
