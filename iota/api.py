@@ -140,32 +140,33 @@ class Function(Object):
 def test_error():
     return Word(ErrorTypes.TEST_ERROR, o=NounType.ERROR)
 
-def error_to_string(self):
-    if self.i.i == ErrorTypes.UNSUPPORTED_SUBJECT:
+@staticmethod
+def error_to_string(i):
+    if i == ErrorTypes.UNSUPPORTED_SUBJECT:
         return "unsupported subject type"
-    elif self.i.i == ErrorTypes.TEST_ERROR:
+    elif i == ErrorTypes.TEST_ERROR:
         return "test error"
-    elif self.i.i == ErrorTypes.INVALID_ARGUMENT:
+    elif i == ErrorTypes.INVALID_ARGUMENT:
         return "invalid argument type"
-    elif self.i.i == ErrorTypes.BAD_INITIALIZATION:
+    elif i == ErrorTypes.BAD_INITIALIZATION:
         return "bad initialization value"
-    elif self.i.i == ErrorTypes.UNSUPPORTED_OBJECT:
+    elif i == ErrorTypes.UNSUPPORTED_OBJECT:
         return "operation is not supported by this object type"
-    elif self.i.i == ErrorTypes.BAD_STORAGE:
+    elif i == ErrorTypes.BAD_STORAGE:
         return "this object type does not support this storage type"
-    elif self.i.i == ErrorTypes.BAD_OPERATION:
+    elif i == ErrorTypes.BAD_OPERATION:
         return "this operation is not supported by this object type with this storage type"
-    elif self.i.i == ErrorTypes.UNKNOWN_KEY:
+    elif i == ErrorTypes.UNKNOWN_KEY:
         return "unknown key"
-    elif self.i.i == ErrorTypes.INVALID_ADVERB_ARGUMENT:
+    elif i == ErrorTypes.INVALID_ADVERB_ARGUMENT:
         return "invalid adverb argument"
-    elif self.i.i == ErrorTypes.EMPTY:
+    elif i == ErrorTypes.EMPTY:
         return "empty"
-    elif self.i.i == ErrorTypes.OUT_OF_BOUNDS:
+    elif i == ErrorTypes.OUT_OF_BOUNDS:
         return "out of bounds"
-    elif self.i.i == ErrorTypes.UNEQUAL_ARRAY_LENGTHS:
+    elif i == ErrorTypes.UNEQUAL_ARRAY_LENGTHS:
         return "unequal array lengths"
-    elif self.i.i == ErrorTypes.BAD_INDEX_TYPE:
+    elif i == ErrorTypes.BAD_INDEX_TYPE:
         return "unsupported index type"
-    elif self.i.i == ErrorTypes.SHAPE_MISMATCH:
+    elif i == ErrorTypes.SHAPE_MISMATCH:
         return "mismatched shapes"

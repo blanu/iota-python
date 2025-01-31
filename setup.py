@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="iota-python",
-    version="0.0.25",
+    version="0.0.59",
     author="Dr. Brandon Wiley",
     author_email="brandon@blanu.net",
     description="iota-python is the base for python-based implementations and tools for iota",
@@ -15,4 +15,7 @@ setup(
         "License :: OSI Approved :: MIT License",
     ],
     python_requires=">=3.6",
+    install_requires=[
+        "testify>=0.11.3",
+    ],
 )

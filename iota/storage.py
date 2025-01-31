@@ -1,6 +1,7 @@
 import struct
 
-from iota.squeeze import squeeze, expand, read_conn
+from iota.squeeze import squeeze_int, expand_int, expand_conn_int, squeeze_floating, expand_floating, expand_conn_floating
+from iota.error import ErrorTypes
 
 class Monads:
     atom = 0
@@ -28,58 +29,58 @@ class Monads:
     truth = 21
 
 class Dyads:
-    amend = 117
-    cut = 118
-    divide = 119
-    drop = 120
-    equal = 121
-    expand = 122
-    find = 123
-    form = 141
-    format2 = 142
-    index = 124
-    indexInDepth = 143
-    integerDivide = 144
-    join = 125
-    less = 126
-    match = 127
-    max = 128
-    min = 129
-    minus = 130
-    more = 131
-    plus = 132
-    power = 133
-    remainder = 135
-    reshape = 136
-    rotate = 137
-    split = 138
-    take = 139
-    times = 140
+    amend = 22
+    cut = 23
+    divide = 24
+    drop = 25
+    equal = 26
+    expand = 27
+    find = 28
+    form = 29
+    format2 = 30
+    index = 31
+    indexInDepth = 32
+    integerDivide = 33
+    join = 34
+    less = 35
+    match = 36
+    max = 37
+    min = 38
+    minus = 39
+    more = 40
+    plus = 41
+    power = 42
+    remainder = 43
+    reshape = 44
+    rotate = 45
+    split = 46
+    take = 47
+    times = 48
 
-    applyMonad = 145
-    retype = 146
+    applyMonad = 49
+    retype = 50
 
 class Triads:
-    applyDyad = 300
+    applyDyad = 51
 
 class MonadicAdverbs:
-    converge = 48
-    each = 41
-    eachPair = 45
-    over = 46
-    scanConverging = 53
-    scanOver = 51
+    converge = 52
+    each = 53
+    eachPair = 54
+    over = 55
+    scanConverging = 56
+    scanOver = 57
 
 class DyadicAdverbs:
-    each2 = 42
-    eachLeft = 43
-    eachRight = 44
-    overNeutral = 47
-    whileOne = 49
-    iterate = 50
-    scanOverNeutral = 52
-    scanWhileOne = 54
-    scanIterating = 55
+    each2 = 58
+    eachLeft = 59
+    eachRight = 60
+    overNeutral = 61
+    whileOne = 62
+    iterate = 63
+    scanOverNeutral = 64
+    scanWhileOne = 65
+    scanIterating = 66
 
 class StorageType:
     WORD = 0
@@ -89,26 +90,26 @@ class StorageType:
     MIXED_ARRAY = 4 # array of storage types
 
 class NounType:
-    INTEGER = 10
-    REAL = 11
-    CHARACTER = 12
-    STRING = 13
-    LIST = 14
-    DICTIONARY = 15
-    BUILTIN_SYMBOL = 16
-    BUILTIN_MONAD = 17
-    BUILTIN_DYAD = 18
-    BUILTIN_TRIAD = 19
-    MONADIC_ADVERB = 20
-    DYADIC_ADVERB = 31
-    USER_SYMBOL = 27
-    USER_MONAD = 21
-    USER_DYAD = 22
-    USER_TRIAD = 23
-    ERROR = 26
-    EXPRESSION = 28
-    TYPE = 29
-    CONDITIONAL = 30
+    INTEGER = 0
+    REAL = 1
+    CHARACTER = 2
+    STRING = 3
+    LIST = 4
+    DICTIONARY = 5
+    BUILTIN_SYMBOL = 6
+    BUILTIN_MONAD = 7
+    BUILTIN_DYAD = 8
+    BUILTIN_TRIAD = 9
+    MONADIC_ADVERB = 10
+    DYADIC_ADVERB = 11
+    USER_SYMBOL = 12
+    USER_MONAD = 13
+    USER_DYAD = 14
+    USER_TRIAD = 15
+    ERROR = 16
+    EXPRESSION = 17
+    TYPE = 18
+    CONDITIONAL = 19
 
 class SymbolType:
     i = 200
@@ -120,13 +121,6 @@ class SymbolType:
 
 class Storage:
     @staticmethod
-    def from_conn(conn):
-        print('Storage.from_conn')
-        data = read_conn(conn)
-        print(data)
-        return Storage.from_bytes(data)
-
-    @staticmethod
     def from_bytes(data):
         typeBytes = data[0:2]
         untypedData = data[2:]
@@ -134,18 +128,30 @@ class Storage:
         (storageType, objectType) = struct.unpack("BB", typeBytes)
 
         if storageType == StorageType.WORD:
-            result, integerRest = Word.from_bytes(untypedData, o=objectType)
-            return result, integerRest
+            return Word.from_bytes(untypedData, o=objectType)
         elif storageType == StorageType.FLOAT:
             return Float.from_bytes(untypedData, o=objectType)
         elif storageType == StorageType.WORD_ARRAY:
-            result, integerArrayRest = WordArray.from_bytes(untypedData, o=objectType)
-            return result, integerArrayRest
+            return WordArray.from_bytes(untypedData, o=objectType)
         elif storageType == StorageType.FLOAT_ARRAY:
             return FloatArray.from_bytes(untypedData, o=objectType)
         elif storageType == StorageType.MIXED_ARRAY:
-            result, mixedArrayRest = MixedArray.from_bytes(untypedData, o=objectType)
-            return result, mixedArrayRest
+            return MixedArray.from_bytes(untypedData, o=objectType)
+
+    @staticmethod
+    def from_conn(conn):
+        (storageType, objectType) = conn.readType()
+
+        if storageType == StorageType.WORD:
+            return Word.from_conn(conn, o=objectType)
+        elif storageType == StorageType.FLOAT:
+            return Float.from_conn(conn, o=objectType)
+        elif storageType == StorageType.WORD_ARRAY:
+            return WordArray.from_conn(conn, o=objectType)
+        elif storageType == StorageType.FLOAT_ARRAY:
+            return FloatArray.from_conn(conn, o=objectType)
+        elif storageType == StorageType.MIXED_ARRAY:
+            return MixedArray.from_conn(conn, o=objectType)
 
     def __init__(self, o, t, x):
         self.o = o
@@ -164,8 +170,13 @@ class Storage:
 class Word(Storage):
     @staticmethod
     def from_bytes(data, o=NounType.INTEGER):
-        i, rest = expand(data)
+        i, rest = expand_int(data)
         return Word(i, o=o), rest
+
+    @staticmethod
+    def from_conn(conn, o=NounType.INTEGER):
+        i = expand_conn_int(conn)
+        return Word(i, o=o)
 
     def __init__(self, x, o=NounType.INTEGER):
         super().__init__(o, StorageType.WORD, int(x))
@@ -199,7 +210,7 @@ class Word(Storage):
 
     def to_bytes(self):
         typeBytes = struct.pack("BB", self.t, self.o)
-        intBytes = squeeze(self.i)
+        intBytes = squeeze_int(self.i)
         return typeBytes + intBytes
 
 class Float(Storage):
@@ -209,8 +220,13 @@ class Float(Storage):
 
     @staticmethod
     def from_bytes(data, o=NounType.REAL):
-        i = struct.unpack('d', data)
-        return Float(i[0], o=o)
+        i, rest = expand_floating(data)
+        return Float(i, o=o), rest
+
+    @staticmethod
+    def from_conn(conn, o=NounType.REAL):
+        i = expand_conn_floating(conn)
+        return Float(i, o=o)
 
     def __init__(self, x, o=NounType.REAL):
         super().__init__(o, StorageType.FLOAT, float(x))
@@ -245,29 +261,37 @@ class Float(Storage):
 
     def to_bytes(self):
         typeBytes = struct.pack("BB", self.t, self.o)
-        floatBytes = struct.pack("d", self.i)
-        data = typeBytes + floatBytes
-
-        length = len(data)
-        lengthBytes = squeeze(length)
-
-        return lengthBytes + data
+        floatBytes = squeeze_floating(self.i)
+        return typeBytes + floatBytes
 
 class WordArray(Storage):
     @staticmethod
     def from_bytes(data, o=NounType.LIST):
         rest = data
         results = []
-        while len(rest) > 0:
-            result, rest = expand(rest)
+        length, rest = expand_int(rest)
+        for index in range(length):
+            result, rest = expand_int(rest)
             results.append(result)
         return WordArray(results, o=o), rest
+
+    @staticmethod
+    def from_conn(conn, o=NounType.LIST):
+        results = []
+        length = expand_conn_int(conn)
+        for index in range(length):
+            result = expand_conn_int(conn)
+            results.append(result)
+        return WordArray(results, o=o)
 
     def __init__(self, x, o=NounType.LIST):
         super().__init__(o, StorageType.WORD_ARRAY, [int(y) for y in x])
 
     def __hash__(self):
         return hash((self.o, self.t, self.i))
+
+    def __str__(self):
+        return "V"+str(self.i)
 
     def to_conn(self, conn):
         data = self.to_bytes()
@@ -276,28 +300,34 @@ class WordArray(Storage):
     def to_bytes(self):
         typeBytes = struct.pack("BB", self.t, self.o)
 
-        intArrayBytes = b''
+        length = len(self.i)
+        intArrayBytes = squeeze_int(length)
+
         for y in self.i:
-            intArrayBytes += squeeze(y)
+            intArrayBytes += squeeze_int(y)
 
-        data = typeBytes + intArrayBytes
-
-        length = len(data)
-        lengthBytes = squeeze(length)
-
-        return lengthBytes + data
+        return typeBytes + intArrayBytes
 
 class FloatArray(Storage):
     @staticmethod
     def from_bytes(data, o=NounType.LIST):
-        rest = data
-        results = []
-        while len(rest) > 0:
-            data = rest[:8]
-            rest = rest[8:]
+        (length, rest) = expand_int(data)
 
-            result = struct.unpack('d', data)[0]
-            results.append(result)
+        floats = []
+        for index in range(length):
+            (floating, rest) = expand_floating(rest)
+            floats.append(float(floating))
+
+        return FloatArray(floats, o=o), rest
+
+    @staticmethod
+    def from_conn(conn, o=NounType.LIST):
+        length = expand_conn_int(conn)
+
+        results = []
+        for index in range(length):
+            result = expand_conn_floating(conn)
+            results.append(float(result))
         return FloatArray(results, o=o)
 
     def __init__(self, x, o=NounType.LIST):
@@ -313,26 +343,35 @@ class FloatArray(Storage):
     def to_bytes(self):
         typeBytes = struct.pack("BB", self.t, self.o)
 
+        length = len(self.i)
+        lengthBytes = squeeze_int(length)
+
         floatArrayBytes = b''
         for y in self.i:
-            floatArrayBytes += struct.pack("d", y)
+            floatArrayBytes += squeeze_floating(y)
 
-        data = typeBytes + floatArrayBytes
-
-        length = len(data)
-        lengthBytes = squeeze(length)
-
-        return lengthBytes + data
+        return typeBytes + lengthBytes + floatArrayBytes
 
 class MixedArray(Storage):
     @staticmethod
     def from_bytes(data, o=NounType.LIST):
-        rest = data
+        length, rest = expand_int(data)
+
         results = []
-        while len(rest) > 0:
+        for index in range(length):
             result, rest = Storage.from_bytes(rest)
             results.append(result)
         return MixedArray(results, o=o), rest
+
+    @staticmethod
+    def from_conn(conn, o=NounType.LIST):
+        length = expand_conn_int(conn)
+
+        results = []
+        for index in range(length):
+            result = Storage.from_conn(conn)
+            results.append(result)
+        return MixedArray(results, o=o)
 
     def __init__(self, x, o=NounType.LIST):
         super().__init__(o, StorageType.MIXED_ARRAY, x)
@@ -347,13 +386,12 @@ class MixedArray(Storage):
     def to_bytes(self):
         typeBytes = struct.pack("BB", self.t, self.o)
 
-        floatArrayBytes = b''
+        length = len(self.i)
+        lengthBytes = squeeze_int(length)
+
+        listBytes = b''
         for y in self.i:
-            floatArrayBytes += y.to_bytes()
+            listBytes += y.to_bytes()
 
-        data = typeBytes + floatArrayBytes
-
-        length = len(data)
-        lengthBytes = squeeze(length)
-
-        return lengthBytes + data
+        result = typeBytes + lengthBytes + listBytes
+        return result
