@@ -6,7 +6,7 @@ from iota.error import ErrorTypes
 class Monads:
     atom = 0
     char = 1
-    complementation = 2
+    inot = 2
     enclose = 3
     enumerate = 4
     first = 5

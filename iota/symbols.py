@@ -19,7 +19,7 @@ applyDyad = Word(Triads.applyDyad, o=NounType.BUILTIN_TRIAD)
 
 atom = Word(Monads.atom, o=NounType.BUILTIN_MONAD)
 char = Word(Monads.char, o=NounType.BUILTIN_MONAD)
-complementation = Word(Monads.complementation, o=NounType.BUILTIN_MONAD)
+inot = Word(Monads.inot, o=NounType.BUILTIN_MONAD)
 enclose = Word(Monads.enclose, o=NounType.BUILTIN_MONAD)
 ienumerate = Word(Monads.enumerate, o=NounType.BUILTIN_MONAD)
 first = Word(Monads.first, o=NounType.BUILTIN_MONAD)
@@ -68,24 +68,24 @@ times = Word(Dyads.times, o=NounType.BUILTIN_DYAD)
 
 # Monadic Adverbs
 
-converge = Word(MonadicAdverbs.converge, o=NounType.BUILTIN_MONAD)
-each = Word(MonadicAdverbs.each, o=NounType.BUILTIN_MONAD)
-eachPair = Word(MonadicAdverbs.eachPair, o=NounType.BUILTIN_MONAD)
-over = Word(MonadicAdverbs.over, o=NounType.BUILTIN_MONAD)
-scanConverging = Word(MonadicAdverbs.scanConverging, o=NounType.BUILTIN_MONAD)
-scanOver = Word(MonadicAdverbs.scanOver, o=NounType.BUILTIN_MONAD)
+converge = Word(MonadicAdverbs.converge, o=NounType.MONADIC_ADVERB)
+each = Word(MonadicAdverbs.each, o=NounType.MONADIC_ADVERB)
+eachPair = Word(MonadicAdverbs.eachPair, o=NounType.MONADIC_ADVERB)
+over = Word(MonadicAdverbs.over, o=NounType.MONADIC_ADVERB)
+scanConverging = Word(MonadicAdverbs.scanConverging, o=NounType.MONADIC_ADVERB)
+scanOver = Word(MonadicAdverbs.scanOver, o=NounType.MONADIC_ADVERB)
 
 # Dyadic Adverbs
 
-each2 = Word(DyadicAdverbs.each2, o=NounType.BUILTIN_DYAD)
-eachLeft = Word(DyadicAdverbs.eachLeft, o=NounType.BUILTIN_DYAD)
-eachRight = Word(DyadicAdverbs.eachRight, o=NounType.BUILTIN_DYAD)
-overNeutral = Word(DyadicAdverbs.overNeutral, o=NounType.BUILTIN_DYAD)
-iterate = Word(DyadicAdverbs.iterate, o=NounType.BUILTIN_DYAD)
-scanIterating = Word(DyadicAdverbs.scanIterating, o=NounType.BUILTIN_DYAD)
-scanOverNeutral = Word(DyadicAdverbs.scanOverNeutral, o=NounType.BUILTIN_DYAD)
-scanWhileOne = Word(DyadicAdverbs.scanWhileOne, o=NounType.BUILTIN_DYAD)
-whileOne = Word(DyadicAdverbs.whileOne, o=NounType.BUILTIN_DYAD)
+each2 = Word(DyadicAdverbs.each2, o=NounType.DYADIC_ADVERB)
+eachLeft = Word(DyadicAdverbs.eachLeft, o=NounType.DYADIC_ADVERB)
+eachRight = Word(DyadicAdverbs.eachRight, o=NounType.DYADIC_ADVERB)
+overNeutral = Word(DyadicAdverbs.overNeutral, o=NounType.DYADIC_ADVERB)
+iterate = Word(DyadicAdverbs.iterate, o=NounType.DYADIC_ADVERB)
+scanIterating = Word(DyadicAdverbs.scanIterating, o=NounType.DYADIC_ADVERB)
+scanOverNeutral = Word(DyadicAdverbs.scanOverNeutral, o=NounType.DYADIC_ADVERB)
+scanWhileOne = Word(DyadicAdverbs.scanWhileOne, o=NounType.DYADIC_ADVERB)
+whileOne = Word(DyadicAdverbs.whileOne, o=NounType.DYADIC_ADVERB)
 
 # Builtin Words
 
