@@ -33,9 +33,9 @@ class Object:
             ints = [int.from_bytes(utf32[y:y+4], 'big') for y in range(0, len(utf32), 4)]
             return WordArray(ints, o=NounType.STRING)
         elif type(i) == dict:
-            keys = i.keys()
-            values = i.values()
-            zipped = zip(keys, values)
+            keys = [Object.from_python(key) for key in i.keys()]
+            values = [Object.from_python(value) for value in i.values()]
+            zipped = [Object.from_python(pair) for pair in zip(keys, values)]
             return MixedArray(zipped, o=NounType.DICTIONARY)
         elif isinstance(i, Storage):
             return i
@@ -71,8 +71,8 @@ class Object:
         elif i.o == NounType.DICTIONARY:
             results = {}
             for pair in i.i:
-                key = pair.i[0]
-                value = pair.i[1]
+                key = Object.to_python(pair.i[0])
+                value = Object.to_python(pair.i[1])
                 results[key] = value
             return results
         elif i.o == NounType.USER_SYMBOL:

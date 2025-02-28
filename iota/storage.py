@@ -9,6 +9,7 @@ class Monads:
     inot = 2
     enclose = 3
     enumerate = 4
+    expand = 27
     first = 5
     floor = 6
     format = 7
@@ -34,7 +35,6 @@ class Dyads:
     divide = 24
     drop = 25
     equal = 26
-    expand = 27
     find = 28
     form = 29
     format2 = 30
