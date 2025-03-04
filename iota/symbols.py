@@ -36,6 +36,7 @@ shape = Word(Monads.shape, o=NounType.BUILTIN_MONAD)
 size = Word(Monads.size, o=NounType.BUILTIN_MONAD)
 transpose = Word(Monads.transpose, o=NounType.BUILTIN_MONAD)
 unique = Word(Monads.unique, o=NounType.BUILTIN_MONAD)
+undefined = Word(Monads.undefined, o=NounType.BUILTIN_MONAD)
 
 # Dyads
 

@@ -13,7 +13,7 @@ def C(i):
         raise Exception('invalid character')
 
 def QuotedSymbol(i):
-    if(i[0] == ':'):
+    if i[0] == ':':
         i = i[1:]
 
     result = []
@@ -25,7 +25,7 @@ def QuotedSymbol(i):
     return WordArray(result, o=NounType.QUOTED_SYMBOL)
 
 def Symbol(i):
-    if(i[0] == ':'):
+    if i[0] == ':':
         i = i[1:]
 
     if i == "x":
@@ -68,12 +68,39 @@ class Object:
             ints = [int.from_bytes(utf32[y:y+4], 'big') for y in range(0, len(utf32), 4)]
             return WordArray(ints, o=NounType.STRING)
         elif type(i) == dict:
-            keys = [Object.from_python(key) for key in i.keys()]
-            values = [Object.from_python(value) for value in i.values()]
-            zipped = [Object.from_python(pair) for pair in zip(keys, values)]
-            return MixedArray(zipped, o=NounType.DICTIONARY)
+            keys = list(i.keys())
+            values = list(i.values())
+
+            if all([type(y) == int for y in keys]):
+                skeys = WordArray(keys, o=NounType.LIST)
+            elif all([type(y) == float for y in keys]):
+                skeys = FloatArray(keys, o=NounType.LIST)
+            else:
+                skeys = MixedArray([Object.from_python_dict_key(y) for y in keys], o=NounType.LIST)
+
+            if all([type(y) == int for y in values]):
+                svalues = WordArray(values, o=NounType.LIST)
+            elif all([type(y) == float for y in values]):
+                svalues = FloatArray(values, o=NounType.LIST)
+            else:
+                svalues = MixedArray([Object.from_python(y) for y in values], o=NounType.LIST)
+
+            return MixedArray([skeys, svalues], o=NounType.DICTIONARY)
         elif isinstance(i, Storage):
             return i
+
+    # In python, keys of dicts cannot be lists, but they can be tuples.
+    # We take special care to convert these back into lists.
+    # Otherwise, they will get confused as functions, for which we also use a tuple representation.
+    @staticmethod
+    def from_python_dict_key(i):
+        if type(i) == tuple:
+            return Object.from_python(list(i))
+        elif type(i) == frozenset:
+            d = dict(i)
+            return Object.from_python(d)
+        else:
+            return Object.from_python(i)
 
     @staticmethod
     def from_python_to_expression(i):
@@ -105,9 +132,28 @@ class Object:
             return b.decode("utf-32be")
         elif i.o == NounType.DICTIONARY:
             results = {}
-            for pair in i.i:
-                key = Object.to_python(pair.i[0])
-                value = Object.to_python(pair.i[1])
+            skeys = i.i[0]
+            svalues = i.i[1]
+
+            if skeys.t == StorageType.WORD_ARRAY:
+                keys = skeys.i
+            elif skeys.t == StorageType.FLOAT_ARRAY:
+                keys = skeys.i
+            elif skeys.t == StorageType.MIXED_ARRAY:
+                keys = [Object.to_python_dict_keys(y) for y in skeys.i]
+            else:
+                raise Exception("Unknown storage type for dictionary keys")
+
+            if svalues.t == StorageType.WORD_ARRAY:
+                values = svalues.i
+            elif svalues.t == StorageType.FLOAT_ARRAY:
+                values = svalues.i
+            elif svalues.t == StorageType.MIXED_ARRAY:
+                values = [Object.to_python(y) for y in svalues.i]
+            else:
+                raise Exception("Unknown storage type for dictionary values")
+
+            for key, value in zip(keys, values):
                 results[key] = value
             return results
         elif i.o == NounType.BUILTIN_SYMBOL:
@@ -146,6 +192,18 @@ class Object:
         elif i.o == NounType.ERROR:
             s = error_to_string(i.i)
             raise Exception(s)
+
+    # In python, keys of dicts cannot be lists, but they can be tuples.
+    # We take special care to convert these serialized lists back into tuples.
+    @staticmethod
+    def to_python_dict_keys(i):
+        result = Object.to_python(i)
+        if type(result) == list:
+            return tuple(result)
+        elif type(result) == dict:
+            return frozenset(result.items())
+        else:
+            return result
 
 class Function(Object):
     @staticmethod

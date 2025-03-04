@@ -24,6 +24,7 @@ class Monads:
     transpose = 16
     unique = 17
     count = 18
+    undefined = 67
 
     evaluate = 19
     erase = 20
@@ -289,7 +290,16 @@ class WordArray(Storage):
         super().__init__(o, StorageType.WORD_ARRAY, [int(y) for y in x])
 
     def __hash__(self):
-        return hash((self.o, self.t, self.i))
+        otemp = self.o
+        if type(otemp) == list:
+            otemp = tuple(otemp)
+        ttemp = self.t
+        if type(ttemp) == list:
+            ttemp = tuple(ttemp)
+        itemp = self.i
+        if type(itemp) == list:
+            itemp = tuple(itemp)
+        return hash((otemp, ttemp, itemp))
 
     def __str__(self):
         return "V"+str(self.i)
