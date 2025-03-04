@@ -110,14 +110,15 @@ class NounType:
     EXPRESSION = 17
     TYPE = 18
     CONDITIONAL = 19
+    QUOTED_SYMBOL = 20
 
 class SymbolType:
-    i = 200
-    x = 201
-    y = 202
-    z = 203
-    f = 204
-    undefined = 205
+    i = 0
+    x = 1
+    y = 2
+    z = 3
+    f = 4
+    undefined = 5
 
 class Storage:
     @staticmethod

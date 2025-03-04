@@ -12,6 +12,41 @@ def C(i):
     else:
         raise Exception('invalid character')
 
+def QuotedSymbol(i):
+    if(i[0] == ':'):
+        i = i[1:]
+
+    result = []
+    for y in i:
+        utf32 = y.encode("utf-32be")
+        integer = int.from_bytes(utf32, 'big')
+        result.append(integer)
+
+    return WordArray(result, o=NounType.QUOTED_SYMBOL)
+
+def Symbol(i):
+    if(i[0] == ':'):
+        i = i[1:]
+
+    if i == "x":
+        return Word(SymbolType.x, o=NounType.BUILTIN_SYMBOL)
+    elif i == "y":
+        return Word(SymbolType.y, o=NounType.BUILTIN_SYMBOL)
+    elif i == "z":
+        return Word(SymbolType.z, o=NounType.BUILTIN_SYMBOL)
+    elif i == "f":
+        return Word(SymbolType.f, o=NounType.BUILTIN_SYMBOL)
+    elif i == "undefined":
+        return Word(SymbolType.undefined, o=NounType.BUILTIN_SYMBOL)
+    else:
+        result = []
+        for y in i:
+            utf32 = y.encode("utf-32be")
+            integer = int.from_bytes(utf32, 'big')
+            result.append(integer)
+
+        return WordArray(result, o=NounType.USER_SYMBOL)
+
 class Object:
     @staticmethod
     def from_python(i):
@@ -75,8 +110,31 @@ class Object:
                 value = Object.to_python(pair.i[1])
                 results[key] = value
             return results
+        elif i.o == NounType.BUILTIN_SYMBOL:
+            if i.i == SymbolType.x:
+                return ":x"
+            elif i.i == SymbolType.y:
+                return ":y"
+            elif i.i == SymbolType.z:
+                return ":z"
+            elif i.i == SymbolType.f:
+                return ":f"
+            elif i.i == SymbolType.undefined:
+                return ":undefined"
         elif i.o == NounType.USER_SYMBOL:
-            return None # FIXME
+            results = ":"
+            for y in i.i:
+                b = int.to_bytes(y, 4, 'big')
+                c = b.decode("utf-32be")
+                results += c
+            return results
+        elif i.o == NounType.QUOTED_SYMBOL:
+            results = ":"
+            for y in i.i:
+                b = int.to_bytes(y, 4, 'big')
+                c = b.decode("utf-32be")
+                results += c
+            return results
         elif i.o == NounType.USER_MONAD:
             return None # FIXME
         elif i.o == NounType.USER_DYAD:
@@ -140,7 +198,6 @@ class Function(Object):
 def test_error():
     return Word(ErrorTypes.TEST_ERROR, o=NounType.ERROR)
 
-@staticmethod
 def error_to_string(i):
     if i == ErrorTypes.UNSUPPORTED_SUBJECT:
         return "unsupported subject type"
